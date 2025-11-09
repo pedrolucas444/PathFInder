@@ -116,7 +116,7 @@ Contém toda a lógica principal do projeto:
 
 ---
 
-## 🖥️ Execução
+## Execução
 
 ### 1. Criar e ativar o ambiente virtual
 
@@ -229,13 +229,13 @@ As cores utilizadas são:
 
 ---
 
-## 📜 Licença
+## Licença
 
 Este projeto está licenciado sob a **Licença MIT**.
 
 ---
 
-## ✍️ Autores
+## Autores
 
 - Gustavo Ceolin Silva Veloso
 - Henrique Pinto Santos
