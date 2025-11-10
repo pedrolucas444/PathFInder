@@ -18,7 +18,7 @@ try:
     CINZA = (200, 200, 200)
     LARANJA = (255, 165, 0)
 except ImportError:
-    print("Aviso: Pygame não encontrado. Visualização desativada.", file=sys.stderr)
+    print("⚠️  Módulo Pygame indisponível. Modo de visualização gráfica desabilitado.", file=sys.stderr)
 
 class No:
     def __init__(self, posicao, pai=None):
@@ -54,7 +54,7 @@ def ler_labirinto(linhas):
         if r == 0:
             colunas = len(elementos)
         elif len(elementos) != colunas:
-            raise ValueError(f"Linha {r+1} tem número diferente de colunas.")
+            raise ValueError(f"⚠️  Inconsistência detectada: linha {r+1} possui quantidade de colunas diferente das demais.")
         for c, char in enumerate(elementos):
             if char == 'S':
                 inicio = (r, c)
@@ -68,15 +68,15 @@ def ler_labirinto(linhas):
                 try:
                     custo = int(char)
                     if custo < 0:
-                        raise ValueError(f"Custo negativo '{char}' na linha {r+1}, coluna {c+1}")
+                        raise ValueError(f"❌ Valor de custo inválido '{char}' (valores negativos não são permitidos) - posição: linha {r+1}, coluna {c+1}")
                     linha_grade.append(max(1, custo))
                 except ValueError:
-                    raise ValueError(f"Caractere inválido '{char}' na linha {r+1}, coluna {c+1}")
+                    raise ValueError(f"❌ Caractere não reconhecido '{char}' encontrado na posição: linha {r+1}, coluna {c+1}")
         grade.append(linha_grade)
     if inicio is None:
-        raise ValueError("Ponto inicial 'S' não encontrado.")
+        raise ValueError("❌ Configuração inválida: marcador de início 'S' não foi localizado no labirinto.")
     if fim is None:
-        raise ValueError("Ponto final 'E' não encontrado.")
+        raise ValueError("❌ Configuração inválida: marcador de destino 'E' não foi localizado no labirinto.")
     return grade, inicio, fim
 
 def posicao_valida(posicao, grade):
@@ -86,7 +86,7 @@ def posicao_valida(posicao, grade):
 
 def busca_a_estrela(grade, inicio, fim, permitir_diagonal=True, heuristica=distancia_diagonal, visualizar=False):
     if visualizar and not pygame_disponivel:
-        print("Aviso: Visualização desativada (pygame ausente).", file=sys.stderr)
+        print("⚠️  Renderização gráfica não disponível devido à ausência do Pygame.", file=sys.stderr)
         visualizar = False
 
     no_inicio = No(inicio)
@@ -110,7 +110,7 @@ def busca_a_estrela(grade, inicio, fim, permitir_diagonal=True, heuristica=dista
         largura = colunas * TAMANHO_CELULA
         altura = linhas * TAMANHO_CELULA
         tela = pygame.display.set_mode((largura, altura))
-        pygame.display.set_caption("Busca A* - Visualização")
+        pygame.display.set_caption("Algoritmo A* - Visualização em Tempo Real")
         relogio = pygame.time.Clock()
         historico_aberto.append(set(conjunto_aberto))
     caminho_encontrado = False
@@ -214,16 +214,16 @@ def reconstruir(origem, no_atual):
 
 def mostrar_caminho(caminho):
     if caminho:
-        print("Caminho encontrado:")
-        print(" -> ".join([f"({r},{c})" for r, c in caminho]))
+        print("✅ Rota ótima identificada:")
+        print(" ➜ ".join([f"({r},{c})" for r, c in caminho]))
     else:
-        print("Sem solução")
+        print("❌ Não foi possível encontrar uma rota válida")
 
 def mostrar_labirinto(grade, caminho, inicio, fim):
     if not caminho:
-        print("\nLabirinto sem solução:")
+        print("\n🗺️  Mapa do labirinto (sem solução viável):")
     else:
-        print("\nLabirinto com caminho:")
+        print("\n🗺️  Mapa do labirinto (rota traçada):")
     caminho_set = set(caminho) if caminho else set()
     for r in range(len(grade)):
         linha = []
@@ -294,7 +294,15 @@ def esperar_saida():
             esperando = False
 
 def principal():
-    print("Digite o labirinto. Use S para início, E para fim, 0 livre, 1 obstáculo, 2-9 custo. Digite 'fim' para encerrar.")
+    print("═══════════════════════════════════════════════════════════════")
+    print("📋 Instruções de entrada do labirinto:")
+    print("   • S = posição inicial")
+    print("   • E = destino final")
+    print("   • 0 = célula livre (custo padrão)")
+    print("   • 1 = obstáculo intransponível")
+    print("   • 2-9 = células com custo elevado")
+    print("   • Digite 'fim' para iniciar o processamento")
+    print("═══════════════════════════════════════════════════════════════")
     linhas = []
     while True:
         linha = input().strip()
@@ -308,9 +316,9 @@ def principal():
             mostrar_caminho(caminho)
             mostrar_labirinto(grade, caminho, inicio, fim)
         else:
-            print("Nenhum caminho encontrado.")
+            print("❌ Impossível determinar uma rota entre os pontos especificados.")
     except ValueError as e:
-        print(f"Erro: {e}")
+        print(f"❌ Falha no processamento: {e}")
 
 if __name__ == "__main__":
     principal()
